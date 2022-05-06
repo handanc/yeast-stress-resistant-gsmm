@@ -1,8 +1,20 @@
 clear;clc;
 changeCobraSolver('gurobi', 'all')
 
+%% Convert to ec model using GECKO formulation
+model = readCbModel('yeastGEM.mat');
+model = buildRxnGeneMat(model); % for the COBRA and RAVEN Toolbox compability
+yeastGEM = model;
+
+cd('../GECKO-2.0.0/geckomat')
+tic
+[ecModel,ecModel_batch] = enhanceGEM(model,'COBRA','ec_YeastGEM',1)
+toc  % 40 mins
+
+cd(currentDir)
+
 %% Initiate Model
-load ecmodel_batch.mat
+% load ecmodel_batch.mat
 model = ecModel_batch;
 
 experiments = { 'ethanolb2','ethanolb8', 'caffeine', 'coniferylaldehyde', 'iron', 'nickel', 'phenylethanol', 'silver'};
